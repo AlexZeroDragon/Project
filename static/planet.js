@@ -63,7 +63,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const earthGeometry = new THREE.SphereGeometry(earthScale, 64, 64);
     const earthMaterial = new THREE.MeshStandardMaterial({ map: earthTexture });
     const earth = new THREE.Mesh(earthGeometry, earthMaterial);
-    earth.position.x = -3;
+    earth.position.x = -1;
     scene.add(earth);
 
     // Свет
