@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Экзопланеты</title>
+
+    <!-- Подключение Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Поиск данных об экзопланетах</h1>
+        
+		<div class="text-center mt-3">
+		 <button id="toggle-theme" class="btn btn-secondary mt-3">Сменить тему</button>
+		 </div>
+        <form method="post" class="d-flex justify-content-center mt-4">
+            <input type="text" name="planet_name" class="form-control w-50" placeholder="Введите название экзопланеты" required>
+            <button type="submit" class="btn btn-primary ms-2">Найти</button>
+			<button type="button" class="btn btn-outline-secondary ms-2" id="reset-button">Сбросить</button>
+        </form>
+
+        {% if error %}
+        <p class="error text-danger text-center">{{ error }}</p>
+        {% endif %}
+
+        {% if planet_data %}
+        <div id="loading-spinner" class="d-none text-center">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Загрузка...</p>
+        </div>
+
+        <h2 class="mt-5">Результаты:</h2>
+        <ul>
+            <li><strong>Название:</strong> {{ planet_data.get("Name", "Н/Д") }}</li>
+            <li><strong>Масса (Земля):</strong> 
+                <span data-bs-toggle="tooltip" title="Масса планеты относительно массы Земли">{{ planet_data.get("Mass (Earth)", "Н/Д") }}</span>
+            </li>
+            <li><strong>Радиус (Земля):</strong>
+                <span data-bs-toggle="tooltip" title="Радиус планеты относительно радиуса Земли">{{ planet_data.get("Radius (Earth)", "Н/Д") }}</span>
+            </li>
+            <li><strong>Температура звезды (К):</strong>
+                <span data-bs-toggle="tooltip" title="Температура звезды, к которой принадлежит планета, в Кельвинах">{{ planet_data.get("Star Temp (K)", "Н/Д") }}</span>
+            </li>
+            <li><strong>Радиус звезды (Солнечные радиусы):</strong>
+                <span data-bs-toggle="tooltip" title="Радиус звезды, к которой принадлежит планета, в солнечных радиусах">{{ planet_data.get("Star Radius (Solar)", "Н/Д") }}</span>
+            </li>
+            <li><strong>Масса звезды (Солнечные массы):</strong>
+                <span data-bs-toggle="tooltip" title="Масса звезды, к которой принадлежит планета, в солнечных массах">{{ planet_data.get("Star Mass (Solar)", "Н/Д") }}</span>
+            </li>
+            <li><strong>Полуось орбиты (а. е.):</strong>
+                <span data-bs-toggle="tooltip" title="Среднее расстояние планеты от её звезды в астрономических единицах">{{ planet_data.get("Orbital Semi-Major Axis (AU)", "Н/Д") }}</span>
+            </li>
+            <li><strong>Период орбиты (дни):</strong>
+                <span data-bs-toggle="tooltip" title="Время, за которое планета совершает один оборот вокруг своей звезды (в днях)">{{ planet_data.get("Orbital Period (days)", "Н/Д") }}</span>
+            </li>
+            <li><strong>Температура равновесия (К):</strong>
+                <span data-bs-toggle="tooltip" title="Температура планеты, если бы она не имела атмосферы и была бы идеальным черным телом">{{ planet_data.get("Equilibrium Temperature (K)", "Н/Д") }}</span>
+            </li>
+			<li><strong>Температура равновесия (°C / °F):</strong>
+				<span data-bs-toggle="tooltip" title="Температура в градусах Цельсия и Фаренгейта">
+					{{ planet_data.get("Equilibrium Temperature (°C / °F)", "Н/Д") }}
+				</span>
+			</li>
+			<h3 class="mt-4">Сравнение с Землёй</h3>
+<div class="row">
+    <div class="col-md-6">
+        <canvas id="massChart"></canvas>
+    </div>
+    <div class="col-md-6">
+        <canvas id="radiusChart"></canvas>
+    </div>
+</div>
+
+<!-- Сравнение расстояния от звезды -->
+<h4 class="mt-4">Сравнение расстояния от звезды (в а. е.):</h4>
+<div id="orbit-chart" style="width: 100%; max-width: 600px; height: 150px; margin: 20px auto;"></div>
+			
+        </ul>
+		<h3 class="mt-5">Визуализация:</h3>
+<div id="planet-container" class="my-3"></div>
+
+        <h3>Дополнительная информация:</h3>
+        <p><strong>Время выполнения запроса:</strong> {{ elapsed_time | round(2) }} сек.</p>
+        
+        <!-- Ссылки на Википедию -->
+        <p>
+            <strong>Ссылки на Википедию:</strong>
+            <a href="{{ wikipedia_links.en }}" target="_blank">English</a> |
+            <a href="{{ wikipedia_links.ru }}" target="_blank">Русский</a>    
+			<strong><button id="download-json" class="btn btn-outline-success mt-3">Скачать данные (JSON)</button></strong>
+        </p>
+        {% endif %}
+    </div>
+
+    <!-- Подключаем Popper.js (для корректной работы подсказок) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <!-- Подключаем сам Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        // Инициализация Tooltips после загрузки страницы
+        document.addEventListener("DOMContentLoaded", function () {
+            var tooltipTriggerList = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            tooltipTriggerList.forEach(function (tooltipTriggerEl) {
+                new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        });
+
+        // Переключение тёмной и светлой темы
+        document.getElementById("toggle-theme").addEventListener("click", () => {
+            document.body.classList.toggle("dark-theme");
+        });
+
+        // Показать/скрыть спиннер загрузки
+        document.querySelector("form").addEventListener("submit", function() {
+            document.getElementById("loading-spinner").classList.remove("d-none");
+        });
+    </script>
+	
+<script>
+    // Reset button handler
+    document.getElementById("reset-button").addEventListener("click", () => {
+        // Clear input
+        document.querySelector("input[name='planet_name']").value = "";
+
+        // Hide text results
+        const resultElements = document.querySelectorAll("ul, h2, h3, p");
+        resultElements.forEach(el => el.style.display = "none");
+
+        // Hide spinner if visible
+        const spinner = document.getElementById("loading-spinner");
+        if (spinner) spinner.classList.add("d-none");
+
+        // Remove the 3D scene (planet container)
+        const container = document.getElementById("planet-container");
+        if (container) {
+            container.remove(); // fully removes the element and its canvas
+        }
+
+        // Optionally reload page instead of manual cleanup:
+        // location.reload();
+    });
+</script>
+
+<script>
+    // Existing tooltip + theme + spinner code...
+
+    // Reset button (already present)
+
+    // Download JSON
+    const downloadButton = document.getElementById("download-json");
+    if (downloadButton) {
+        downloadButton.addEventListener("click", () => {
+            const data = {{ planet_data | tojson | safe }};
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "{{ planet_name | replace(' ', '_') }}_data.json";
+            a.click();
+
+            URL.revokeObjectURL(url);
+        });
+    }
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        {% if planet_data %}
+        const exoAU = parseFloat("{{ planet_data.get('Orbital Semi-Major Axis (AU)', 0) }}");
+        const canvas = document.createElement("canvas");
+        canvas.width = 600;
+        canvas.height = 170;
+        const ctx = canvas.getContext("2d");
+
+        document.getElementById("orbit-chart").appendChild(canvas);
+
+        const orbits = [
+            { name: "Меркурий", au: 0.39 },
+            { name: "Венера", au: 0.72 },
+            { name: "Земля", au: 1.00 },
+            { name: "Марс", au: 1.52 },
+            { name: "{{ planet_data.get('Name', 'Экзопланета') }}", au: exoAU, isExoplanet: true }
+        ];
+
+        const scale = 250; // AU to pixels
+        const baseY = 90;
+
+        ctx.font = "14px Roboto";
+        ctx.textAlign = "center";
+
+        // Draw star (the host star)
+        ctx.beginPath();
+        ctx.arc(35, baseY, 20, 0, 2 * Math.PI);
+        ctx.fillStyle = "#ffcc00"; // Yellow sun
+        ctx.fill();
+        ctx.strokeStyle = "#e0a800";
+        ctx.stroke();
+
+        ctx.fillStyle = "#000";
+        ctx.fillText("Звезда", 35, baseY - 30);
+
+        // Draw orbit line
+        ctx.beginPath();
+        ctx.moveTo(0, baseY);
+        ctx.lineTo(canvas.width, baseY);
+        ctx.strokeStyle = "#ccc";
+        ctx.stroke();
+
+        // Draw orbits
+        orbits.forEach((planet) => {
+            const x = planet.au * scale + 50;
+
+            ctx.beginPath();
+            ctx.arc(x, baseY, 6, 0, 2 * Math.PI);
+            ctx.fillStyle = planet.isExoplanet ? "#007bff" : "#888";
+            ctx.fill();
+
+            ctx.fillStyle = "#000";
+
+            const labelY = planet.isExoplanet ? baseY + 35 : baseY + 20;
+            ctx.fillText(planet.name, x, labelY);
+        });
+        {% endif %}
+    });
+</script>
+
+{% if planet_data %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const mass = parseFloat("{{ planet_data.get('Mass (Earth)', 0) }}") || 0;
+    const radius = parseFloat("{{ planet_data.get('Radius (Earth)', 0) }}") || 0;
+
+    new Chart(document.getElementById("massChart"), {
+        type: 'bar',
+        data: {
+            labels: ['Земля', '{{ planet_data.get("Name", "Планета") }}'],
+            datasets: [{
+                label: 'Масса (в массах Земли)',
+                data: [1, mass],
+                backgroundColor: ['#4caf50', '#2196f3']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Масса (Земля = 1)' }
+                }
+            }
+        }
+    });
+
+    new Chart(document.getElementById("radiusChart"), {
+        type: 'bar',
+        data: {
+            labels: ['Земля', '{{ planet_data.get("Name", "Планета") }}'],
+            datasets: [{
+                label: 'Радиус (в радиусах Земли)',
+                data: [1, radius],
+                backgroundColor: ['#4caf50', '#f44336']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: { display: true, text: 'Радиус (Земля = 1)' }
+                }
+            }
+        }
+    });
+});
+</script>
+{% endif %}
+
+{% if planet_data %}
+<script>
+    const planetRadius = {{ planet_data.get("Radius (Earth)", 1) | safe }};
+</script>
+{% endif %}
+
+	{% if planet_data %}
+{% endif %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="/static/planet.js"></script>
+
+</body>
+</html>
+
