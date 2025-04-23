@@ -7,8 +7,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
 
-    const size = Math.min(window.innerWidth, window.innerHeight) * 0.9;
-	renderer.setSize(size, size);
+    renderer.setSize(window.innerWidth * 0.6, window.innerHeight * 0.6);
+    container.appendChild(renderer.domElement);
 
     // Значение радиуса (из index.html)
     const radius = (typeof planetRadius === "number" && !isNaN(planetRadius)) ? planetRadius : 1;
@@ -107,11 +107,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Ресайз (на телефонах плохо)
     window.addEventListener("resize", () => {
-    const newSize = Math.min(window.innerWidth, window.innerHeight) * 0.9;
-    renderer.setSize(newSize, newSize);
-    camera.aspect = 1; // квадратное окно — соотношение сторон 1
-    camera.updateProjectionMatrix();
-});
-
+        renderer.setSize(window.innerWidth * 0.6, window.innerHeight * 0.6);
+        camera.aspect = (window.innerWidth * 0.6) / (window.innerHeight * 0.6);
+        camera.updateProjectionMatrix();
     });
 });
