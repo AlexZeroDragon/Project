@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const container = document.getElementById("planet-container");
     if (!container) return;
 
-    // Создаём сцену
+    // Сцена
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let planetTexture, earthTexture;
     let planetScale, earthScale;
 
-    // 🔸 Рандомные текстуры для "нормальных" планет (радиус ≤ 10)
+    // Каменные
     const rockyTextures = [
         "/static/planet_texture1.jpg",
         "/static/planet_texture2.jpg",
@@ -29,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
     ];
 
    if (radius > 10) {
-    // List of gas giant textures
+    // Газовые
     const giantTextures = [
         "/static/giant_texture1.jpg",
         "/static/giant_texture2.jpg",
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function () {
         "/static/giant_texture5.jpg"
     ];
 
-    // Randomly select one texture from the list
+    // Рандомизация текстур
 		const randomGiantTexture = giantTextures[Math.floor(Math.random() * giantTextures.length)];
 		planetTexture = textureLoader.load(randomGiantTexture);
 		earthTexture = textureLoader.load("/static/earth_texture.jpg");
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", function () {
     light.position.set(5, 5, 5);
     scene.add(light);
 
-//  Starfield (background)
+//  Звёзды на фоне
     const starGeometry = new THREE.BufferGeometry();
     const starCount = 1000;
     const starVertices = [];
@@ -95,7 +95,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Камера
     camera.position.z = (planetScale + earthScale) * 3;
 
-    // Анимация
+    // Анимация 
     function animate() {
         requestAnimationFrame(animate);
         planet.rotation.y += 0.002;
@@ -105,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     animate();
 
-    // Ресайз
+    // Ресайз (на телефонах плохо)
     window.addEventListener("resize", () => {
         renderer.setSize(window.innerWidth * 0.6, window.innerHeight * 0.6);
         camera.aspect = (window.innerWidth * 0.6) / (window.innerHeight * 0.6);
