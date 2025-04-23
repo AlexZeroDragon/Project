@@ -56,14 +56,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const planetGeometry = new THREE.SphereGeometry(planetScale, 64, 64);
     const planetMaterial = new THREE.MeshStandardMaterial({ map: planetTexture });
     const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-    planet.position.x = planetScale + earthScale + 0.5;
+    planet.position.x = planetScale + earthScale + 0;
     scene.add(planet);
 
     // Земля
     const earthGeometry = new THREE.SphereGeometry(earthScale, 64, 64);
     const earthMaterial = new THREE.MeshStandardMaterial({ map: earthTexture });
     const earth = new THREE.Mesh(earthGeometry, earthMaterial);
-    earth.position.x = -1;
+    earth.position.x = -1.3;
     scene.add(earth);
 
     // Свет
