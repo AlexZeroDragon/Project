@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const planetGeometry = new THREE.SphereGeometry(planetScale, 64, 64);
     const planetMaterial = new THREE.MeshStandardMaterial({ map: planetTexture });
     const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-    planet.position.x = planetScale + earthScale + 0;
+    planet.position.x = planetScale + earthScale -0.5;
     scene.add(planet);
 
     // Земля
