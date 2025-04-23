@@ -8,19 +8,11 @@ document.addEventListener("DOMContentLoaded", function () {
     const renderer = new THREE.WebGLRenderer({ antialias: true });
 
 	// Размер в зависимости от экрана (Фикси)
-    function setRendererSize() {
-        const container = document.getElementById("planet-container");
-        const width = window.innerWidth < 768 ? window.innerWidth * 0.95 : window.innerWidth * 0.6;
-        const height = window.innerWidth < 768 ? window.innerHeight * 0.5 : window.innerHeight * 0.6;
+    let width = window.innerWidth < 768 ? window.innerWidth * 0.95 : window.innerWidth * 0.6;
+    let height = window.innerWidth < 768 ? window.innerHeight * 0.5 : window.innerHeight * 0.6;
 
-        renderer.setSize(width, height);
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-
-        if (!renderer.domElement.parentElement) {
-            container.appendChild(renderer.domElement);
-        }
-    }
+    renderer.setSize(width, height);
+    container.appendChild(renderer.domElement);
     // Радиус из индеса
     const radius = (typeof planetRadius === "number" && !isNaN(planetRadius)) ? planetRadius : 1;
 
@@ -115,4 +107,14 @@ document.addEventListener("DOMContentLoaded", function () {
         renderer.render(scene, camera);
     }
     animate();
+
+window.addEventListener("resize", () => {
+        let width = window.innerWidth < 768 ? window.innerWidth * 0.95 : window.innerWidth * 0.6;
+        let height = window.innerWidth < 768 ? window.innerHeight * 0.5 : window.innerHeight * 0.6;
+
+        renderer.setSize(width, height);
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+    });
+}
 });
