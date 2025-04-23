@@ -1,0 +1,63 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark-theme {
+    background-color: #121212;
+    color: #ffffff;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: center;
+    animation: fadeIn 1s ease-in-out;
+}
+
+body:not(.dark-theme) h1 {
+    color: #333;
+}
+
+.dark-theme h1 {
+    color: #fff;
+}
+
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 8px;
+    transition: all 0.3s;
+}
+
+button:hover {
+    background-color: #007bff;
+    transform: scale(1.1);
+}
+
+input[type="text"] {
+    padding: 12px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    border: 1px solid
+	
+	#planet-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+	
+	#download-json {
+    transition: all 0.3s ease;
+}
+
+#download-json:hover {
+    background-color: #198754;
+    color: white;
+    transform: scale(1.05);
+}
