@@ -40,6 +40,7 @@ button:hover {
     transform: scale(1.1);
 }
 
+
 input[type="text"] {
     padding: 12px;
     font-size: 1.1rem;
@@ -51,6 +52,13 @@ input[type="text"] {
     justify-content: center;
     align-items: center;
     margin-top: 20px;
+	#planet-container canvas {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 0 auto;
+}
+
 	
 	#download-json {
     transition: all 0.3s ease;
